@@ -1,0 +1,19 @@
+.quick-filter-head {
+  position: relative;
+  padding-right: 1.5em !important;
+}
+
+.sort-configuration-indicator {
+  position: absolute;
+  top: 0;
+  left: calc(100% - 1.5em);
+}
+
+quick-filter {
+  position: absolute;
+  display: block;
+}
+
+.quick-filter-managed tr:has(.text-filtered, .value-filtered) {
+  display: none;
+}
