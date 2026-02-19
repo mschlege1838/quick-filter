@@ -593,10 +593,7 @@ export class QuickFilter {
       cell.addEventListener('click', this);
     }
     
-    const bodyRows = table.tBodies[0].rows;
-    for (let i = 0; i < bodyRows.length; ++i) {
-      bodyRows[i].setAttribute('data-initial-index', i);
-    }
+    this.initData();
   }
   
   handleEvent(event) {
@@ -616,6 +613,12 @@ export class QuickFilter {
     return this.getQuickFilterGroups(e => e.hasSortDirection);
   }
   
+  initData() {
+    const bodyRows = this.table.tBodies[0].rows;
+    for (let i = 0; i < bodyRows.length; ++i) {
+      bodyRows[i].setAttribute('data-initial-index', i);
+    }
+  }
   
   getQuickFilterGroups(test) {
     const quickFilters = new Map();
