@@ -1,81 +1,95 @@
-<template>
-  <div class="quick-filter">
-    <div class="heading">
-      <div class="title">Quick Filter</div><div
-          class="controls">
-        <input type="button" class="reset-filter" value="Reset" />
-        <input type="button" class="quick-filter-close" value="🗙" />
-      </div>
-    </div>
-    <fieldset class="controls">
-      <legend>Controls</legend>
-      <fieldset class="input-type-controls">
-        <legend>Input Type</legend>
-        <input type="radio" class="input-type" name="inputType" id="inputTypeAdaptive" value="adaptive" checked />
-        <label for="inputTypeAdaptive" class="radio-label">Adaptive</label>
-        <input type="radio" class="input-type" name="inputType" id="inputTypeDirect" value="direct" />
-        <label for="inputTypeDirect" class="radio-label">Direct</label>
-      </fieldset>
-      <input type="checkbox" class="case-sensitive" id="caseSensitiveControl" />
-      <label for="caseSensitiveControl" class="check-label">Case Sensitive</label>
-    </fieldset>
-    <fieldset class="sort-controls">
-      <legend>Sort</legend>
-      <div class="sort-direction-controls">
-        <input type="radio" class="sort-direction" name="sort" id="sortInitial" value="initial" checked />
-        <label for="sortInitial" class="radio-label">Initial</label>
-        <input type="radio" class="sort-direction" name="sort" id="sortAscending" value="ascending" />
-        <label for="sortAscending" class="radio-label">Ascending</label>
-        <input type="radio" class="sort-direction" name="sort" id="sortDescending" value="descending" />
-        <label for="sortDescending" class="radio-label">Descending</label>
-      </div>
-      <div class="sort-position">
-        <label for="sortOrder">Order</label><input type="number" class="sort-order" id="sortOrder" />
-      </div>
-    </fieldset>
-    <fieldset class="filter-controls">
-      <legend>Filter</legend>
-      <div class="filter-by-text">
-        <div class="filter-by-text-field">
-          <label for="textFilter">Text Filter</label><input class="text-filter" id="textFilter" />
+<!DOCTYPE html>
+<html>
+<body>
+  <template>
+    <div class="quick-filter">
+      <div class="heading">
+        <div class="title">Quick Filter</div><div
+            class="controls">
+          <input type="button" class="reset-filter" value="Reset" />
+          <input type="button" class="quick-filter-close" value="🗙" />
         </div>
-        <fieldset>
-          <legend>Text Filter Operator</legend>
-          <div class="text-filter-type-set">
-            <div>
-              <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeContains" value="contains" checked />
-              <label for="textFilterTypeContains" class="radio-label">Contains</label>
-              <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeStartsWith" value="starts-with" />
-              <label for="textFilterTypeStartsWith" class="radio-label">Starts With</label>
-            </div>
-            <div>
-              <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeLt" value="lt" />
-              <label for="textFilterTypeLt" class="radio-label">&lt;</label>
-              <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeLe" value="le" />
-              <label for="textFilterTypeLe" class="radio-label">&le;</label>
-              <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeEq" value="eq" />
-              <label for="textFilterTypeEq" class="radio-label">=</label>
-              <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeGe" value="ge" />
-              <label for="textFilterTypeGe" class="radio-label">&ge;</label>
-              <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeGt" value="gt" />
-              <label for="textFilterTypeGt" class="radio-label">&gt;</label>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>Selected Values Operator</legend>
-          <div>
-            <input type="radio" class="selected-values-operator" name="selectedValuesOperator" id="selectedValuesOperatorOr" value="or" checked />
-            <label for="selectedValuesOperatorOr" class="radio-label">Or</label>
-            <input type="radio" class="selected-values-operator" name="selectedValuesOperator" id="selectedValuesOperatorAnd" value="and" />
-            <label for="selectedValuesOperatorAnd" class="radio-label">And</label>
-          </div>
-        </fieldset>
       </div>
-      <div class="filter-by-value">
-        <ul class="filter-values">
-        </ul>
-      </div>
-    </fieldset>
-  </div>
-</template>
+      <fieldset class="controls">
+        <legend>Controls</legend>
+        <fieldset class="input-type-controls">
+          <legend>Input Type</legend>
+          <input type="radio" class="input-type" name="inputType" id="inputTypeAdaptive" value="adaptive" checked />
+          <label for="inputTypeAdaptive" class="radio-label">Adaptive</label>
+          <input type="radio" class="input-type" name="inputType" id="inputTypeDirect" value="direct" />
+          <label for="inputTypeDirect" class="radio-label">Direct</label>
+        </fieldset>
+        <input type="checkbox" class="case-sensitive" id="caseSensitiveControl" />
+        <label for="caseSensitiveControl" class="check-label">Case Sensitive</label>
+        <div class="quick-filter-order text-field">
+          <label for="order">Order</label><input type="number" class="control-order" id="order" />
+        </div>
+        <fieldset class="input-cooperation">
+          <legend>Overall Cooperation</legend>
+          <input type="radio" class="cooperation-operator" name="cooperationOperator" id="cooperationOperatorAnd" value="and" checked />
+          <label for="cooperationOperatorAnd" class="radio-label">And</label>
+          <input type="radio" class="cooperation-operator" name="cooperationOperator" id="cooperationOperatorOr" value="or" />
+          <label for="cooperationOperatorOr" class="radio-label">Or</label>
+        </fieldset>
+      </fieldset>
+      <fieldset class="sort-controls">
+        <legend>Sort</legend>
+        <div class="sort-direction-controls">
+          <input type="radio" class="sort-direction" name="sort" id="sortInitial" value="initial" checked />
+          <label for="sortInitial" class="radio-label">Initial</label>
+          <input type="radio" class="sort-direction" name="sort" id="sortAscending" value="ascending" />
+          <label for="sortAscending" class="radio-label">Ascending</label>
+          <input type="radio" class="sort-direction" name="sort" id="sortDescending" value="descending" />
+          <label for="sortDescending" class="radio-label">Descending</label>
+        </div>
+      </fieldset>
+      <fieldset class="filter-controls">
+        <legend>Filter</legend>
+        <div class="filter-by-text">
+          <div class="filter-by-text-field text-field">
+            <label for="textFilter">Text Filter</label><input class="text-filter" id="textFilter" />
+          </div>
+          <fieldset>
+            <legend>Text Filter Operator</legend>
+            <div class="text-filter-type-set">
+              <div>
+                <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeContains" value="contains" checked />
+                <label for="textFilterTypeContains" class="radio-label">Contains</label>
+                <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeStartsWith" value="starts-with" />
+                <label for="textFilterTypeStartsWith" class="radio-label">Starts With</label>
+              </div>
+              <div>
+                <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeLt" value="lt" />
+                <label for="textFilterTypeLt" class="radio-label">&lt;</label>
+                <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeLe" value="le" />
+                <label for="textFilterTypeLe" class="radio-label">&le;</label>
+                <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeEq" value="eq" />
+                <label for="textFilterTypeEq" class="radio-label">=</label>
+                <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeGe" value="ge" />
+                <label for="textFilterTypeGe" class="radio-label">&ge;</label>
+                <input type="radio" class="text-filter-type" name="textFilterType" id="textFilterTypeGt" value="gt" />
+                <label for="textFilterTypeGt" class="radio-label">&gt;</label>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Text Filter/Selection Cooperation</legend>
+            <div>
+              <input type="radio" class="selected-values-operator" name="selectedValuesOperator" id="selectedValuesOperatorAnd" value="and" checked />
+              <label for="selectedValuesOperatorAnd" class="radio-label">And</label>
+              <input type="radio" class="selected-values-operator" name="selectedValuesOperator" id="selectedValuesOperatorOr" value="or" />
+              <label for="selectedValuesOperatorOr" class="radio-label">Or</label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="filter-by-value-divider"></div>
+        <div class="filter-by-value-label">Selection</div>
+        <div class="filter-by-value">
+          <ul class="filter-values">
+          </ul>
+        </div>
+      </fieldset>
+    </div>
+  </template>
+</body>
+</html>

@@ -1,12 +1,29 @@
 
 .quick-filter {
-  width: 20rem;
-  background-color: white;
-  border: 1px solid black;
-  text-align: start;
-  font-weight: normal;
+  --border-color: black;
+  --bg-color: white;
+  --text-color: black;
+  --filtered-color: rgba(0, 0, 0, .5)
 }
 
+@media (prefers-color-scheme: dark) {
+  .quick-filter {
+    --border-color: lightgrey;
+    --bg-color: rgb(50, 50, 50);
+    --text-color: lightgrey;
+    --filtered-color: rgba(211, 211, 211, .5)
+  }
+}
+
+
+.quick-filter {
+  width: 20rem;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  text-align: start;
+  font-weight: normal;
+  color: var(--text-color);
+}
 
 @media (max-width: 40rem) {
   .quick-filter {
@@ -17,14 +34,13 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .quick-filter {
-    background-color: rgb(50, 50, 50);
-    color: lightgrey;
-  }
-  .quick-filter {
-    border: 1px solid lightgrey;
-  }
+
+.filter-value-item.filtered {
+  color: var(--filtered-color);
+}
+
+.filter-value-item.filtered:has(input:checked) {
+  color: var(--text-color);
 }
 
 
@@ -32,16 +48,16 @@
   display: none;
 }
 
-.quick-filter .filter-values {
+.filter-values {
   padding: 0;
   margin: 0;
 }
 
-.quick-filter .filter-values li {
+.filter-values li {
   list-style-type: none;
 }
 
-.quick-filter .filter-by-value {
+.filter-by-value {
   max-height: 10em;
   width: calc(100% - .4em);
   overflow: auto;
@@ -56,56 +72,67 @@
   width: 50%;
 }
 
-.quick-filter input[type="button"],
-.quick-filter input[type="radio"],
-.quick-filter input[type="checkbox"],
-.quick-filter .radio-label,
-.quick-filter .check-label {
+input[type="button"],
+input[type="radio"],
+input[type="checkbox"],
+.radio-label,
+.check-label {
   cursor: pointer;
 }
 
-.quick-filter .heading .controls {
+.heading .controls {
   text-align: right;
 }
 
-.quick-filter .heading .title {
+.heading .title {
   font-weight: bold;
   font-size: 1.5em;
 }
 
-.quick-filter .filter-value-item.filtered {
-  display: none;
-}
 
-.quick-filter .sort-direction-controls, .quick-filter .sort-position, .quick-filter .text-filter-type-set {
+.sort-direction-controls, .text-filter-type-set {
   margin-bottom: .5em;
 }
 
-.quick-filter .sort-position label,
-.quick-filter .sort-position input,
-.quick-filter .filter-by-text-field label,
-.quick-filter .filter-by-text-field input {
+.text-field label,
+.text-filter input {
   display: inline-block;
 }
 
 
-.quick-filter .sort-position label,
-.quick-filter .filter-by-text-field label {
+.text-field label {
   width: 30%;
 }
 
-.quick-filter .sort-position input,
-.quick-filter .filter-by-text-field input {
+.text-field input {
   width: 70%;
   box-sizing: border-box;
 }
 
-.quick-filter .filter-by-value {
-  margin: .5em .15em 0 .15em;
-  border: 1px solid lightgrey;
+.filter-by-value {
+  margin: 0 .15em;
+  border: 1px solid var(--border-color);
 }
 
-.quick-filter fieldset {
+fieldset {
   margin: .15em;
 }
 
+.quick-filter-order {
+  margin-top: .5em;
+}
+
+.filter-by-value-divider {
+  width: 100%;
+  border-top: 2px solid var(--border-color);
+  margin-top: 1em;
+}
+
+.filter-by-value-label {
+  margin-left: 1em;
+  display: inline-block;
+  position: relative;
+  top: -.7em;
+  background-color: var(--bg-color);
+  padding: 0 .2em;
+}

@@ -1,12 +1,32 @@
 .quick-filter-head {
   position: relative;
-  padding-right: 1.5em !important;
+  padding-right: 3em !important;
 }
 
-.sort-configuration-indicator {
+.quick-filter-config {
   position: absolute;
   top: 0;
-  left: calc(100% - 1.5em);
+  left: calc(100% - 3em);
+}
+
+.quick-filter-config .sort-order {
+  vertical-align: top;
+  padding-right: .1em;
+}
+
+.quick-filter-config .sort-order, .quick-filter-config .common-config {
+  display: inline-block;
+}
+
+.quick-filter-config .column-order, .quick-filter-config .conjunction-operator {
+  font-size: .5em;
+  display: block;
+  text-align: left;
+}
+
+.quick-filter-config .conjunction-operator {
+  text-transform: uppercase;
+  font-family: sans;
 }
 
 quick-filter {
@@ -14,6 +34,7 @@ quick-filter {
   display: block;
 }
 
-.quick-filter-managed tr:has(.text-filtered, .value-filtered) {
+.quick-filter-managed tr:has(.text-filtered, .value-filtered),
+.quick-filter-managed tr.filtered {
   display: none;
 }
