@@ -38,8 +38,6 @@ const UNORDERED = Symbol('unordered');
 
 class QuickFilterElement extends SimpleEventDispatcherMixin(HTMLElement, ['paramschange']) {
   
-  static idCounter = 0;
-  
   extractors;
   
   constructor() {
