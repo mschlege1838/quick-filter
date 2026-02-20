@@ -370,19 +370,19 @@ export async function loadTemplate(templateUrl) {
 
 const downloadedStyles = {};
 
-export const WebComponentMixin = (superclass, template, includeStylesheetAttribute, attributeDefinitions) => {
+export const WebComponentMixin = (superclass, template, includeStylesheetsAttribute, attributeDefinitions) => {
   
   attributeDefinitions = attributeDefinitions || [];
-  if (includeStylesheetAttribute) {
-    attributeDefinitions.push({ attribute: 'data-stylesheet-href', field: 'externalStyles', type: 'list' });
+  if (includeStylesheetsAttribute) {
+    attributeDefinitions.push({ attribute: 'data-stylesheet-hrefs', field: 'stylesheetHrefs', type: 'list' });
   }
-  
-  console.log(attributeDefinitions);
   
   const result = class extends superclass {
     
     static attributeDefinitions = attributeDefinitions;
     static observedAttributes = attributeDefinitions.map(e => e.attribute);
+    
+    externalStyles;
     
     constructor() {
       super();
@@ -408,42 +408,55 @@ export const WebComponentMixin = (superclass, template, includeStylesheetAttribu
     attributeChangedCallback(name, oldValue, newValue) {
       attributeChange(result, this, name, oldValue, newValue);
     }
+    
+    addInternalStylesheet(stylesheet) {
+      const stylesheets = this.shadowRoot.adoptedStyleSheets;
+      if (stylesheets.indexOf(stylesheet) !== -1) {
+        return;
+      }
+      stylesheets.push(stylesheet);
+    }
   };
   
-  if (includeStylesheetAttribute) {
-    Object.defineProperty(result.prototype, 'externalStyles', {
+  if (includeStylesheetsAttribute) {
+    Object.defineProperty(result.prototype, 'stylesheetHrefs', {
+      
       get() {
-        return this.attributeGet('externalStyles');
+        return this.attributeGet('stylesheetHrefs');
       },
       
       set (value) {
+        const externalStyles = this.externalStyles || [];
+        const currentStyles = (this.shadowRoot.adoptedStyleSheets || []).filter(e => externalStyles.indexOf(e) !== -1);
+        
+        externalStyles.length = 0;
+        
         if (!value) {
-          this.shadowRoot.adoptedStyleSheets = [];
+          this.shadowRoot.adoptedStyleSheets = currentStyles;
           return;
         }
         
         value = listValue(value);
         if (!value.length) {
-          this.shadowRoot.adoptedStyleSheets = [];
+          this.shadowRoot.adoptedStyleSheets = currentStyles;
           return;
         }
         
-        const stylesheets = [];
         const promises = [];
         for (const href of value) {
           const current = downloadedStyles[href];
           if (current) {
-            stylesheets.push(current)
+            externalStyles.push(current)
           } else {
             promises.push(fetch(href).then(resp => resp.text()).then(text => {
               const sheet = new CSSStyleSheet();
               sheet.replaceSync(text);
-              stylesheets.push(downloadedStyles[href] = sheet);
+              externalStyles.push(downloadedStyles[href] = sheet);
             }));
           }
         }
         
-        Promise.all(promises).then(() => this.shadowRoot.adoptedStyleSheets = stylesheets);
+        Promise.all(promises).then(() => this.shadowRoot.adoptedStyleSheets = currentStyles.concat(externalStyles));
         
       }
     });

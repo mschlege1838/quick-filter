@@ -1,5 +1,6 @@
 
-import { SimpleEventDispatcherMixin, hasAnyClass, collapseWhitespace, naturalCompare, convertPrimitive, removeChildren, quoteEscape } from './util.mjs';
+import { SimpleEventDispatcherMixin, hasAnyClass, collapseWhitespace, naturalCompare, 
+        convertPrimitive, removeChildren, quoteEscape, WebComponentMixin, loadTemplate } from './util.mjs';
 import quickFilterStylesheet from './quick-filter.css' with { type: 'css' };
 import quickFilterExternalStylesheet from './quick-filter-ext.css' with { type: 'css' };
 
@@ -7,8 +8,7 @@ import quickFilterExternalStylesheet from './quick-filter-ext.css' with { type: 
 
 document.adoptedStyleSheets.push(quickFilterExternalStylesheet);
 
-const quickFilterTemplate = await fetch(import.meta.resolve('./quick-filter.html')).then(resp => resp.text())
-    .then(t => Document.parseHTMLUnsafe(t).querySelector('template'));
+const quickFilterTemplate = await loadTemplate(import.meta.resolve('./quick-filter.html'));
 
 
 function isRelationalApplicable(textFilter) {
@@ -36,15 +36,13 @@ function doMatch(value, textFilter, relationalApplicable, textFilterType) {
 
 const UNORDERED = Symbol('unordered');
 
-class QuickFilterElement extends SimpleEventDispatcherMixin(HTMLElement, ['paramschange']) {
+customElements.define('quick-filter', class extends WebComponentMixin(SimpleEventDispatcherMixin(HTMLElement, ['paramschange']), quickFilterTemplate, true) {
   
   extractors;
   
   constructor() {
     super();
-    const shadowRoot = this.attachShadow({ mode: 'open' });
-    shadowRoot.adoptedStyleSheets = [ quickFilterStylesheet ];
-    shadowRoot.appendChild(document.importNode(quickFilterTemplate.content, true));
+    this.addInternalStylesheet(quickFilterStylesheet);
   }
   
   get table() {
@@ -563,9 +561,9 @@ class QuickFilterElement extends SimpleEventDispatcherMixin(HTMLElement, ['param
     
     this.emitEvent('paramschange');
   }
-}
+});
 
-customElements.define('quick-filter', QuickFilterElement);
+
 
 export class QuickFilter {
   

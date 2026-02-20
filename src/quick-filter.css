@@ -23,6 +23,7 @@
   text-align: start;
   font-weight: normal;
   color: var(--text-color);
+  z-index: 1;
 }
 
 @media (max-width: 40rem) {
