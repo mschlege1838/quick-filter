@@ -335,7 +335,7 @@ export function attributeSync(type, instance, fieldName, value) {
   } else {
     value = value ?? null;
     
-    if (target.type === 'list') {
+    if (target.type === 'list' && Array.isArray(value)) {
       value = value && JSON.stringify(value);  
     }
     
@@ -358,7 +358,22 @@ export function attributeChange(type, instance, name, oldValue, newValue) {
   }
   
   const target = type.attributeDefinitions.find(e => e.attribute === name);
-  if (target && instance[target.field] != newValue) {
+  if (!target) {
+    return;
+  }
+  
+  if (target.type === 'boolean') {
+    const current = instance[target.field];
+    if (current && !newValue || !current && newValue) {
+      instance[target.field] = newValue;
+    }
+  } else if (target.type === 'list') {
+    const value = newValue || '[]';
+    const current = JSON.stringify(instance[target.field]);
+    if (value !== current) {
+      instance[target.field] = JSON.parse(newValue);
+    }
+  } else if (instance[target.field] != newValue) {
     instance[target.field] = newValue;
   }
 }
