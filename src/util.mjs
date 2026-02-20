@@ -256,12 +256,12 @@ export function listValue(value) {
     return value;
   }
   
-  value = JSON.parse(value);
-  if (!Array.isArray(value)) {
-    throw new TypeError(`Value must be an Array or valid JSON array string: ${value}`);
+  try {
+    value = JSON.parse(value);
+  } catch (e) {
+    return [value];
   }
-  
-  return value;
+  return Array.isArray(value) ? value : [value];
 }
 
 export function attributeInit(type, instance) {
@@ -274,11 +274,6 @@ export function attributeInit(type, instance) {
   }
 }
 
-export function attributeBool(type, instance, fieldName) {
-  const value = attributeGet(type, instance, fieldName);
-  return value !== null && value !== 'false' && value !== '0';
-}
-
 export function attributeGet(type, instance, fieldName) {
   if (!type.attributeDefinitions || !instance.getAttribute) {
     return null;
@@ -289,33 +284,72 @@ export function attributeGet(type, instance, fieldName) {
     return null;
   }
   
-  return instance.getAttribute(target.attribute);
+  const attributeName = target.attribute;
+  
+  if (target.type === 'boolean') {
+    return instance.hasAttribute(attributeName);
+  } else {
+    let result = instance.getAttribute(attributeName);
+    if (target.type === 'list') {
+      if (!result) {
+        return [];
+      }
+      
+      try {
+        result = JSON.parse(result);
+      } catch (e) {
+        return [result];
+      }
+      
+      return Array.isArray(result) ? result : [result];
+    }
+    return target.type === 'list' ? listValue(result) : result;
+  }
 }
 
 export function attributeSync(type, instance, fieldName, value) {
   if (!type.attributeDefinitions || !instance.setAttribute || !instance.getAttribute || !instance.removeAttribute) {
-    return false;
+    return;
   }
   
   const target = type.attributeDefinitions.find(e => e.field === fieldName);
   if (!target) {
-    return false;
+    return;
   }
-  
-  value = value ?? null;
   
   const attributeName = target.attribute;
   
-  if (value == instance.getAttribute(attributeName)) {
-    return false;
+  if (target.type === 'boolean') {
+    value = value ?? false;
+    if (value && instance.hasAttribute(attributeName) ||
+        !value && !instance.hasAttribute(attributeName)) {
+      return;
+    }
+    
+    if (value) {
+      instance.setAttribute(attributeName, '');
+    } else {
+      instance.removeAttribute(attributeName);
+    }
+    
+  } else {
+    value = value ?? null;
+    
+    if (target.type === 'list') {
+      value = value && JSON.stringify(value);  
+    }
+    
+    if (value == instance.getAttribute(attributeName)) {
+      return;
+    }
+    
+    if (value !== null) {
+      instance.setAttribute(attributeName, value);
+    } else {
+      instance.removeAttribute(attributeName);
+    }
   }
   
-  if (value !== null) {
-    instance.setAttribute(attributeName, value);
-  } else {
-    instance.removeAttribute(attributeName);
-  }
-  return true;
 }
 
 export function attributeChange(type, instance, name, oldValue, newValue) {
@@ -327,4 +361,83 @@ export function attributeChange(type, instance, name, oldValue, newValue) {
   if (target && instance[target.field] != newValue) {
     instance[target.field] = newValue;
   }
+}
+
+
+const downloadedStyles = {};
+
+export const WebComponentMixin = (superclass, attributeDefinitions, includeExternalStyles) => {
+  
+  attributeDefinitions = attributeDefinitions || [];
+  if (includeExternalStyles) {
+    attributeDefinitions.push({ attribute: 'data-external-styles', field: 'externalStyles', type: 'list' });
+  }
+  
+  console.log(attributeDefinitions);
+  
+  const result = class extends superclass {
+    
+    static attributeDefinitions = attributeDefinitions;
+    static observedAttributes = attributeDefinitions.map(e => e.attribute);
+    
+    connectedCallback() {
+      new Promise((resolve) => {
+        attributeInit(result, this);
+        resolve();
+      });
+    }
+    
+    attributeGet(fieldName) {
+      return attributeGet(result, this, fieldName);
+    }
+    
+    attributeSync(fieldName, value) {
+      attributeSync(result, this, fieldName, value);
+    }
+    
+    attributeChangedCallback(name, oldValue, newValue) {
+      attributeChange(result, this, name, oldValue, newValue);
+    }
+  };
+  
+  if (includeExternalStyles) {
+    Object.defineProperty(result.prototype, 'externalStyles', {
+      get() {
+        return this.attributeGet('externalStyles');
+      },
+      
+      set (value) {
+        if (!value) {
+          this.shadowRoot.adoptedStyleSheets = [];
+          return;
+        }
+        
+        value = listValue(value);
+        if (!value.length) {
+          this.shadowRoot.adoptedStyleSheets = [];
+          return;
+        }
+        
+        const stylesheets = [];
+        const promises = [];
+        for (const href of value) {
+          const current = downloadedStyles[href];
+          if (current) {
+            stylesheets.push(current)
+          } else {
+            promises.push(fetch(href).then(resp => resp.text()).then(text => {
+              const sheet = new CSSStyleSheet();
+              sheet.replaceSync(text);
+              stylesheets.push(downloadedStyles[href] = sheet);
+            }));
+          }
+        }
+        
+        Promise.all(promises).then(() => this.shadowRoot.adoptedStyleSheets = stylesheets);
+        
+      }
+    });
+  }
+  
+  return result;
 }
