@@ -1,3 +1,5 @@
+// TODO Export to own repo
+
 
 export function collapseWhitespace(value) {
   return value ? String(value).replaceAll(/\s+/g, ' ').trim() : '';
@@ -145,6 +147,9 @@ export function hasAnyClass(element) {
 }
 
 export const SimpleEventDispatcherMixin = (superclass, supportedEvents) => class extends superclass {
+  listeners;
+  supportedEvents;
+  
   constructor() {
     super(...arguments);
     this.listeners = {};
@@ -234,5 +239,92 @@ export const SimpleEventDispatcherMixin = (superclass, supportedEvents) => class
       }
     }
     
+  }
+  
+  disconnect() {
+    this.listeners = null;
+  }
+}
+
+
+export function listValue(value) {
+  if (!value) {
+    return [];
+  }
+  
+  if (Array.isArray(value)) {
+    return value;
+  }
+  
+  value = JSON.parse(value);
+  if (!Array.isArray(value)) {
+    throw new TypeError(`Value must be an Array or valid JSON array string: ${value}`);
+  }
+  
+  return value;
+}
+
+export function attributeInit(type, instance) {
+  if (!type.attributeDefinitions || !instance.getAttribute) {
+    return;
+  }
+  
+  for (const { attribute, field } of type.attributeDefinitions) {
+    instance[field] = instance.getAttribute(attribute);
+  }
+}
+
+export function attributeBool(type, instance, fieldName) {
+  const value = attributeGet(type, instance, fieldName);
+  return value !== null && value !== 'false' && value !== '0';
+}
+
+export function attributeGet(type, instance, fieldName) {
+  if (!type.attributeDefinitions || !instance.getAttribute) {
+    return null;
+  }
+  
+  const target = type.attributeDefinitions.find(e => e.field === fieldName);
+  if (!target) {
+    return null;
+  }
+  
+  return instance.getAttribute(target.attribute);
+}
+
+export function attributeSync(type, instance, fieldName, value) {
+  if (!type.attributeDefinitions || !instance.setAttribute || !instance.getAttribute || !instance.removeAttribute) {
+    return false;
+  }
+  
+  const target = type.attributeDefinitions.find(e => e.field === fieldName);
+  if (!target) {
+    return false;
+  }
+  
+  value = value ?? null;
+  
+  const attributeName = target.attribute;
+  
+  if (value == instance.getAttribute(attributeName)) {
+    return false;
+  }
+  
+  if (value !== null) {
+    instance.setAttribute(attributeName, value);
+  } else {
+    instance.removeAttribute(attributeName);
+  }
+  return true;
+}
+
+export function attributeChange(type, instance, name, oldValue, newValue) {
+  if (!type.attributeDefinitions) {
+    return;
+  }
+  
+  const target = type.attributeDefinitions.find(e => e.attribute === name);
+  if (target && instance[target.field] != newValue) {
+    instance[target.field] = newValue;
   }
 }
