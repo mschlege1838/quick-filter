@@ -370,11 +370,11 @@ export async function loadTemplate(templateUrl) {
 
 const downloadedStyles = {};
 
-export const WebComponentMixin = (superclass, template, includeExternalStyles, attributeDefinitions) => {
+export const WebComponentMixin = (superclass, template, includeStylesheetAttribute, attributeDefinitions) => {
   
   attributeDefinitions = attributeDefinitions || [];
-  if (includeExternalStyles) {
-    attributeDefinitions.push({ attribute: 'data-external-styles', field: 'externalStyles', type: 'list' });
+  if (includeStylesheetAttribute) {
+    attributeDefinitions.push({ attribute: 'data-stylesheet-href', field: 'externalStyles', type: 'list' });
   }
   
   console.log(attributeDefinitions);
@@ -410,7 +410,7 @@ export const WebComponentMixin = (superclass, template, includeExternalStyles, a
     }
   };
   
-  if (includeExternalStyles) {
+  if (includeStylesheetAttribute) {
     Object.defineProperty(result.prototype, 'externalStyles', {
       get() {
         return this.attributeGet('externalStyles');
