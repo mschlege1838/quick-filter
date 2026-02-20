@@ -370,7 +370,7 @@ export async function loadTemplate(templateUrl) {
 
 const downloadedStyles = {};
 
-export const WebComponentMixin = (superclass, template, attributeDefinitions, includeExternalStyles) => {
+export const WebComponentMixin = (superclass, template, includeExternalStyles, attributeDefinitions) => {
   
   attributeDefinitions = attributeDefinitions || [];
   if (includeExternalStyles) {
