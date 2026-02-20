@@ -363,10 +363,14 @@ export function attributeChange(type, instance, name, oldValue, newValue) {
   }
 }
 
+export async function loadTemplate(templateUrl) {
+  return await fetch(templateUrl).then(resp => resp.text())
+    .then(t => Document.parseHTMLUnsafe(t).querySelector('template'));
+}
 
 const downloadedStyles = {};
 
-export const WebComponentMixin = (superclass, attributeDefinitions, includeExternalStyles) => {
+export const WebComponentMixin = (superclass, template, attributeDefinitions, includeExternalStyles) => {
   
   attributeDefinitions = attributeDefinitions || [];
   if (includeExternalStyles) {
@@ -379,6 +383,12 @@ export const WebComponentMixin = (superclass, attributeDefinitions, includeExter
     
     static attributeDefinitions = attributeDefinitions;
     static observedAttributes = attributeDefinitions.map(e => e.attribute);
+    
+    constructor() {
+      super();
+      const shadowRoot = this.attachShadow({ mode: 'open' });
+      shadowRoot.appendChild(document.importNode(template.content, true));
+    }
     
     connectedCallback() {
       new Promise((resolve) => {
